@@ -2,4 +2,4 @@
 An autonomous pan-tilt visual tracking camera.
 !!Work in progress!!
 
- test test2 test3
+add a "codes used during development" or "hardware calibration codes" folder (or something similar)
