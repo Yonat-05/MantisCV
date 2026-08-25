@@ -6,12 +6,14 @@ class PIDController:
 
         self.prev_error = 0
         self.integral = 0
-        
+
     def update(self, error):
         P = self.kp * error
+
         self.integral += error
         I = self.ki * self.integral
+
         D = self.kd * (error - self.prev_error)
         self.prev_error = error
-        
-        return P+I+D
+
+        return P + I + D

@@ -3,8 +3,8 @@ import numpy as np
 
 class ColorTracker:
     def __init__(self):
-        self.lower_yellow = np.array([22, 50, 50])
-        self.upper_yellow = np.array([38, 255, 255])
+        self.lower_yellow = np.array([30, 90, 90])
+        self.upper_yellow = np.array([40, 255, 255])
 
     def find_target(self, frame):
         frameGaussian = cv.GaussianBlur(frame,(11,11),0)
