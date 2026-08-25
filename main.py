@@ -16,12 +16,6 @@ def main():
 
     DEADBAND = 5
 
-    if not hardware.motor_power_enabled():
-        print("Motor power OFF. Cannot start tracking.")
-        hardware.close()
-        buzzer.close()
-        return
-
     cap = cv.VideoCapture(0)
 
     if not cap.isOpened():
@@ -47,27 +41,62 @@ def main():
     pan_position = hardware.PAN_CENTER
     tilt_position = hardware.TILT_CENTER
 
-    hardware.center()
-
-    print("Motor power ON.")
-    print("Playing startup melody...")
-
-    buzzer.startup()
-
-    print("Tracking started.")
-    print("Press Ctrl+C to stop.")
-
-    # None = no target state established yet
-    # True = target currently visible
-    # False = target was previously visible but is now lost
+    tracking_active = False
     target_found = None
+
+    print("MantisCV started.")
+    print("Waiting for motor power...")
 
     try:
         while True:
+
+            # -----------------------------
+            # Check motor power
+            # -----------------------------
+
+            power_on = hardware.motor_power_enabled()
+
+            if power_on and not tracking_active:
+
+                # Power has just been turned ON
+                print("Motor power ON.")
+
+                pan_position = hardware.PAN_CENTER
+                tilt_position = hardware.TILT_CENTER
+
+                hardware.center()
+
+                print("Playing startup melody...")
+                buzzer.startup()
+
+                tracking_active = True
+                target_found = None
+
+                print("Tracking started.")
+
+            elif not power_on and tracking_active:
+
+                # Power has just been turned OFF
+                print("Motor power OFF. Waiting...")
+
+                tracking_active = False
+                target_found = None
+
+            # -----------------------------
+            # Camera frame
+            # -----------------------------
+
             ret, frame = cap.read()
 
             if not ret:
                 print("Failed to read frame.")
+                continue
+
+            # -----------------------------
+            # Tracking
+            # -----------------------------
+
+            if not tracking_active:
                 continue
 
             target = tracker.find_target(frame)
