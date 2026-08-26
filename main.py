@@ -1,4 +1,5 @@
 import cv2 as cv
+import subprocess
 
 from vision import ColorTracker
 from control import PIDController
@@ -77,10 +78,17 @@ def main():
             elif not power_on and tracking_active:
 
                 # Power has just been turned OFF
-                print("Motor power OFF. Waiting...")
+                print("Motor power OFF. Shutting down Raspberry Pi...")
 
                 tracking_active = False
                 target_found = None
+
+                subprocess.run(
+                    ["sudo", "-n", "/usr/sbin/poweroff"],
+                    check=False
+                )
+
+                return
 
             # -----------------------------
             # Camera frame
